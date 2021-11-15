@@ -3,8 +3,9 @@ import * as d3 from "d3";
 import "./Dendrogram.css";
 
 export default function Dendrogram() {
-  const width = 460;
-  const height = 460;
+  // main svg
+  const width = 500;
+  const height = 500;
   const margin = { top: 50, right: 30, bottom: 30, left: 60 };
   const d3Chart = useRef();
   const svg = d3
@@ -13,12 +14,13 @@ export default function Dendrogram() {
     .attr("height", height + margin.top + margin.bottom)
     .style("fill", "none")
     .append("g")
-    .attr("transform", "translate(40,0)"); // bit of margin on the left = 40
+    .attr("transform", "translate(40,40)"); // move right 20px. // bit of margin on the left = 40
 
   // read json data
   d3.json(
     "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram.json"
   ).then(function (data) {
+    console.log(data);
     // Create the cluster layout:
     const cluster = d3.cluster().size([height, width - 100]); // 100 is the margin I will have on the right side
 
@@ -28,7 +30,6 @@ export default function Dendrogram() {
     });
     cluster(root);
 
-    // Add the links between nodes:
     svg
       .selectAll("path")
       .data(root.descendants().slice(1))
@@ -54,7 +55,7 @@ export default function Dendrogram() {
         );
       })
       .style("fill", "none")
-      .attr("stroke", "#ccc");
+      .attr("stroke", "black");
 
     // Add a circle for each node.
     svg
@@ -66,7 +67,7 @@ export default function Dendrogram() {
       })
       .append("circle")
       .attr("r", 7)
-      .style("fill", "#69b3a2")
+      .style("fill", "pink")
       .attr("stroke", "black")
       .style("stroke-width", 2);
   });
