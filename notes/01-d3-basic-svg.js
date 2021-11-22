@@ -1,3 +1,4 @@
+//index.html
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -20,9 +21,62 @@
     <circle cx='150' cy='150' r='5' fill='grey'></circle>
     <line x1="225" y1="200" x2="150" y2="150" stroke="grey" stroke-width="1"></line>
   </svg>
+
+<!-- <div></div> -->
+    <div class="canvas"></div>
   
 <!-- d3.library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
     <script src="index.js"></script>
 </body>
 </html>
+
+
+//index.js
+// const a = document.querySelectorAll('div');
+// const b = d3.selectAll('div');
+// console.log(a, b)
+
+const canvas = d3.select('.canvas');
+
+// append the SVG container
+const svg = canvas.append('svg');
+
+// append the SVG container
+const svg = canvas.append('svg')
+  .attr('width', 600)
+  .attr('height', 600);
+
+// create a group
+const group = svg.append('g')
+  .attr('transform', 'translate(0, 100)');    //translate the whole group by the x-axis and y-axis
+
+// append the SVG elements (shapes) to the SVG container
+svg.append('rect')
+  .attr('width', 200)
+  .attr('height', 100)
+  .attr('fill', 'blue')
+  .attr('x', 20)
+  .attr('y', 20);
+
+svg.append('circle')
+  .attr('r', 50)
+  .attr('cx', 300)
+  .attr('cy', 70)
+  .attr('fill', 'pink');
+
+svg.append('line')
+  .attr('x1', 370)
+  .attr('x2', 400)
+  .attr('y1', 20)
+  .attr('y2', 120)
+  .attr('stroke', 'red');
+
+svg.append('text')
+  .attr('x', 20)
+  .attr('y', 200)
+  .attr('fill', 'grey')
+  .text('hello, ninjas')
+  .style('font-family', 'arial')
+  .attr('transform', 'translate(0, -100)');
+ 
