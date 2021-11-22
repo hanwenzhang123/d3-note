@@ -21,3 +21,28 @@ svg.select('rect')    //only select the first element matches ('rect')
   .attr('height', d => d.height)
   .attr('fill', d => d.fill);
 
+
+
+
+//index.html
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SVG Basics</title>
+</head>
+<body>
+  
+    <div class="canvas">
+      <svg width="600" height="600">
+        <rect></rect>
+        <rect></rect>
+        <rect></rect>
+      </svg>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
