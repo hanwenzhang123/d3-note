@@ -318,44 +318,35 @@ const GroupedStackedGraph = ({
     //need to work on from here
     if (keyDimension === tertiary) {
       //Nested Data Structure
-      console.log(selectedList);
-      const selectedNestedArr = [];
+      console.log('selectedList', selectedList);
+      const selectedGroupValue = [];
       selectedList.map(data => {
         if (data[tertiary]) {
-          selectedNestedArr.push({
+          selectedGroupValue.push({
             group: data[primary],
             value: data[secondary]
           });
         }
       });
-      console.log(selectedNestedArr);
+      console.log('selectedGroupValue', selectedGroupValue);
 
-      var groupedData = nest()
+      const groupedData = nest()
         .key(function(d) {
           return d.group;
         })
-        .rollup(function(v) {
-          return {
-            count: v.length
-          };
-        })
-        .entries(selectedNestedArr);
+        .entries(selectedGroupValue);
 
-      var groupedData = groupedData.map((d, i) => {
-        const prev = groupedData[i - 1];
-        const cumsum = prev ? d.value.count + prev.cumsum : d.value.count;
-        d.cumsum = cumsum;
-        return d;
-      });
-      console.log(groupedData);
+      console.log('groupedData', groupedData);
+      console.log('seriesData', seriesData);
 
       var barHeight = height / seriesData.length;
 
       const dom_primary = seriesData.map(d => d[primary]);
-      const dom_secondary = selectedNestedArr.map(d => d.value);
-      y0Scale.domain(dom_primary);
+      const dom_secondary = seriesData.map(d => d[secondary]);
+      console.log('dom_secondary: ', dom_secondary);
 
-      yaxisScale.domain([''].concat(dom_primary));
+      y0Scale.domain(dom_primary);
+      yaxisScale.domain([''].concat(dom_primary).concat(dom_secondary));
 
       let y0Range = [0],
         yaxisRange = [0];
