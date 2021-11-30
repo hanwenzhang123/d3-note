@@ -154,15 +154,15 @@ const GroupedStackedGraph = ({
       .join('rect')
       .attr('class', d => d.key)
       .attr('y', (sequence, i) => {
-        const parent = sequence.data[primary];
+        const parent = sequence.data[secondary];
         return (
-          y0Scale(parent) + secondaryScale.get(parent)(sequence.data[secondary])
+          y0Scale(parent) + secondaryScale.get(parent)(sequence.data[tertiary])
         );
       })
       .attr('x', sequence => getScale(xScale, sequence[0]))
       .attr('width', 0)
       .attr('height', sequence =>
-        secondaryScale.get(sequence.data[primary]).bandwidth()
+        secondaryScale.get(sequence.data[secondary]).bandwidth()
       )
       .on('mousemove', sequence => {
         tooltip
@@ -292,7 +292,7 @@ const GroupedStackedGraph = ({
 
     const width = barWidth - marginLeftVal - margin.right;
 
-    xScale.range([0, width]); //change xScale range size
+    xScale.range([0, width]);
 
     svg.selectAll('.plot').remove();
 
@@ -318,17 +318,15 @@ const GroupedStackedGraph = ({
     //need to work on from here
     if (keyDimension === tertiary) {
       //Nested Data Structure
-      console.log('selectedList', selectedList);
       const selectedGroupValue = [];
-      selectedList.map(data => {
-        if (data[tertiary]) {
-          selectedGroupValue.push({
-            group: data[primary],
-            value: data[secondary]
-          });
-        }
+      seriesData.map(data => {
+        selectedGroupValue.push({
+          group: data[primary],
+          value: data[secondary]
+        });
       });
       console.log('selectedGroupValue', selectedGroupValue);
+      console.log('selectedList', selectedList);
 
       const groupedData = nest()
         .key(function(d) {
@@ -336,58 +334,122 @@ const GroupedStackedGraph = ({
         })
         .entries(selectedGroupValue);
 
-      console.log('groupedData', groupedData);
-      console.log('seriesData', seriesData);
+      // console.log('groupedData', groupedData);
+      // console.log('seriesData', seriesData);
 
-      var barHeight = height / seriesData.length;
+      let barHeight = height / seriesData.length;
 
       const dom_primary = seriesData.map(d => d[primary]);
       const dom_secondary = seriesData.map(d => d[secondary]);
-      console.log('dom_secondary: ', dom_secondary);
+      // console.log('dom_primary : ', dom_primary);
+      // console.log('dom_secondary: ', dom_secondary);
 
-      y0Scale.domain(dom_primary);
-      yaxisScale.domain([''].concat(dom_primary).concat(dom_secondary));
+      y0Scale.domain(dom_secondary);
+      yaxisScale.domain([''].concat(dom_secondary).concat(['']));
 
-      let y0Range = [0],
-        yaxisRange = [0];
+      const y0Range = [0];
+      const yaxisRange = [0];
       let secondaryScale = nest()
-        .key(d => d[primary])
+        .key(d => d[secondary])
         .rollup(d => {
-          var barSpace = barHeight * d.length;
+          let barSpace = barHeight * d.length;
           yaxisRange.push(y0Range[y0Range.length - 1] + barSpace / 2);
           y0Range.push(y0Range[y0Range.length - 1] + barSpace);
           return scaleBand()
-            .domain(d.map(p => p[secondary]))
+            .domain(d.map(p => p[tertiary]))
             .rangeRound([0.04 * barSpace, barSpace * 0.96])
             .padding(0.24);
         })
         .map(seriesData);
 
-      yaxisRange.push(height);
-
-      y0Scale.range(y0Range);
-      yaxisScale.range(yaxisRange);
+      yaxisRange.push(height); //the height of the graph
+      y0Scale.range(y0Range); //bar range empty space
+      yaxisScale.range(yaxisRange); //yaxis label range
+      xScale.range([150, width]); //change xScale range size
       updateGroupedBars(layers, xScale, y0Scale, secondaryScale, tooltip);
 
-      svg
+      //outer y-axis range for the primary dimensions
+      const yaxisOuterRange = [0];
+      const verticalLine = [];
+      let tempValue = 0;
+      groupedData.forEach(d => {
+        let axisSpace = barHeight * d.values.length;
+        tempValue = tempValue + axisSpace;
+        yaxisOuterRange.push(
+          yaxisOuterRange[yaxisOuterRange.length - 1] + tempValue / 2
+        );
+        if (d.values.length > 1) {
+          const index = dom_secondary.indexOf(d.values[0].value);
+          const startPoint = yaxisRange[index + 1];
+          const lengthIndex = index + d.values.length;
+          const endPoint = yaxisRange[lengthIndex];
+          verticalLine.push({
+            start: startPoint,
+            length: endPoint - startPoint
+          });
+        }
+      });
+      yaxisOuterRange.push(height);
+
+      const yaxisLine = yaxisRange.slice(1, -1);
+      const yaxisOuterLine = yaxisOuterRange.slice(1, -1);
+
+      // console.log('yaxisRange: ', yaxisRange);
+      // console.log('yaxisOuterRange: ', yaxisOuterRange);
+      // console.log('yaxisLine: ', yaxisLine);
+      // console.log('yaxisOuterLine: ', yaxisOuterLine);
+      // console.log('verticalLine: ', verticalLine);
+
+      const container = svg
         .select('.y-axis')
-        .attr('transform', `translate(${marginLeftVal}, 0)`)
+        .attr('transform', `translate(${marginLeftVal + 150}, 0)`) //move y-axes to the right by 150
         .call(axisLeft(yaxisScale))
-        .append('g')
-        .attr('class', 'group-labels')
-        .attr('y', 100);
+        .attr('text-anchor', 'end');
+
+      container.append('g').attr('class', 'group-labels');
+      container.append('g').attr('class', 'outer-lines');
+      container.append('g').attr('class', 'vertical-lines');
+      container.append('g').attr('class', 'inner-lines');
 
       g.selectAll('.group-label')
         .data(groupedData)
         .enter()
         .append('text')
         .attr('class', 'group-label')
-        .attr('x', 50)
-        .attr('y', 50)
-        .attr('text-anchor', 'middle');
-      // .text(function(d, i) {
-      //   return 'is Group ' + d.key;
-      // });
+        .attr('text-anchor', 'end')
+        .attr('font-size', '10')
+        .attr('font', 'sans-serif')
+        .attr('y', (d, i) => yaxisOuterRange[i + 1] + 3)
+        .text(function(d, i) {
+          return d.key;
+        });
+
+      g.selectAll('.outer-lines')
+        .data(yaxisOuterLine)
+        .enter()
+        .append('line')
+        .attr('class', 'outer-lines')
+        .attr('transform', (d, i) => `translate(5, ${d})`)
+        .attr('stroke', 'currentColor')
+        .attr('x2', 20);
+
+      g.selectAll('.vertical-lines')
+        .data(verticalLine)
+        .enter()
+        .append('line')
+        .attr('class', 'vertical-lines')
+        .attr('transform', (d, i) => `translate(25, ${d.start})`) //where the vertical line starts
+        .attr('stroke', 'currentColor')
+        .attr('y2', d => d.length); //how long the vertical line is
+
+      g.selectAll('.inner-lines')
+        .data(yaxisLine)
+        .enter()
+        .append('line')
+        .attr('class', 'inner-lines')
+        .attr('transform', (d, i) => `translate(25, ${d})`)
+        .attr('stroke', 'currentColor')
+        .attr('x2', 20);
     } else {
       y1Scale
         .domain(seriesData.map(d => d[primary]))
