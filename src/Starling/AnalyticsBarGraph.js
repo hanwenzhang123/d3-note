@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import ChartSwitchButton from './ChartSwitchButton';
-import { processCompareForGroupedBar } from './GraphFunctions';
-import LegendComponent from './LegendComponent';
-import MetricsDropdown from './MetricsDropdown';
-import GroupedStackedGraph from './GroupedStackedGraph';
-import GroupStackedDendrogram from './GroupStackedDendrogram';
-import { barColorsData, allKeys } from '../InsightsTableConfig';
+import React, { useState } from "react";
+import ChartSwitchButton from "./ChartSwitchButton";
+import { processCompareForGroupedBar } from "./GraphFunctions";
+import LegendComponent from "./LegendComponent";
+import MetricsDropdown from "./MetricsDropdown";
+import GroupedStackedGraph from "./GroupedStackedGraph";
+import GroupStackedDendrogram from "./GroupStackedDendrogram";
+import { barColorsData, allKeys } from "../InsightsTableConfig";
 
 const AnalyticsBarGraph = ({
   chartType,
@@ -14,19 +14,19 @@ const AnalyticsBarGraph = ({
   selectedList,
   showOnlyClickCount,
   chartOptions,
-  setGraphState
+  setGraphState,
 }) => {
   let dimensions = [];
   const [keys, setKeys] = useState([]);
   const [colors, setColors] = useState({});
   const [activeLegend, selectLegend] = useState();
-  const [keyBarDimension, setKeyDimension] = useState('');
+  const [keyBarDimension, setKeyDimension] = useState("");
   const [primaryGroupData, setPrimaryGrouped] = useState({});
-  const [metericSelected, setMetericSelected] = useState('Sends');
+  const [metericSelected, setMetericSelected] = useState("Sends");
   const [barData, setBarData] = useState([]);
   const [showDengrogram, setShowDengrogram] = useState(false);
 
-  const { primary, secondary, tertiary } = graphState['dimensions'];
+  const { primary, secondary, tertiary } = graphState["dimensions"];
 
   React.useEffect(() => {
     if ((primary && secondary) || (primary && secondary && tertiary)) {
@@ -41,18 +41,14 @@ const AnalyticsBarGraph = ({
   console.log(tertiary);
 
   React.useEffect(() => {
-    let {
-      nestedStackData,
-      colors,
-      keyDimension,
-      primaryGrouped
-    } = processCompareForGroupedBar({
-      graphData: graphData,
-      dimensions: graphState['dimensions'],
-      selectedList
-    });
+    let { nestedStackData, colors, keyDimension, primaryGrouped } =
+      processCompareForGroupedBar({
+        graphData: graphData,
+        dimensions: graphState["dimensions"],
+        selectedList,
+      });
 
-    dimensions = graphState['dimensions'];
+    dimensions = graphState["dimensions"];
     setBarData(nestedStackData);
     setKeyDimension(keyDimension);
     setColors(colors);
@@ -60,11 +56,11 @@ const AnalyticsBarGraph = ({
   }, [selectedList, graphData]);
   React.useEffect(() => {
     if (showOnlyClickCount) {
-      setMetericSelected('Clicks');
+      setMetericSelected("Clicks");
     } else {
-      setMetericSelected('Sends');
+      setMetericSelected("Sends");
     }
-  }, [graphState['dimensions']]);
+  }, [graphState["dimensions"]]);
 
   console.log(colors);
   console.log(activeLegend);
@@ -80,7 +76,7 @@ const AnalyticsBarGraph = ({
         />
         <div
           style={{
-            display: 'flex'
+            display: "flex",
           }}
         >
           <ChartSwitchButton
@@ -125,7 +121,7 @@ const AnalyticsBarGraph = ({
             dimensions={graphState.dimensions}
             keys={keys}
             colors={colors}
-            primary={graphState.dimensions['primary']}
+            primary={graphState.dimensions["primary"]}
             metericSelected={metericSelected}
             keyDimension={keyBarDimension}
             primaryGrouped={primaryGroupData}

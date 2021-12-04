@@ -7,19 +7,23 @@ import Dendrogram from "./Dendrogram/Dendrogram";
 import DendrogramTwo from "./Dendrogram/DendrogramTwo";
 import DendrogramThree from "./Dendrogram/DendrogramThree";
 import DendrogramFour from "./Dendrogram/DendrogramFour";
+import DendrogramStackedBar from "./Starling/DendrogramStackedBar";
+import NestedYAxisBar from "./Bar/NestedyAxisBar";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <NestedYAxisBar />
+        {/* <DendrogramStackedBar />
         <StackedBarChart />
         <StackedBar />
         <DendrogramFour />
         <DendrogramThree />
         <DendrogramTwo />
-        <Dendrogram />
+        <Dendrogram /> */}
         <ResponsiveBar />
-        <LineChart />
+        {/* <LineChart /> */}
       </header>
     </div>
   );

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import * as d3 from 'd3';
+import React, { useEffect, useState, useRef } from "react";
+import * as d3 from "d3";
 
-const GroupStackedDendrogram = props => {
+const GroupStackedDendrogram = (props) => {
   const { primary, secondary, tertiary, graphData, colors, allKeys } = props;
 
   console.log(primary);
@@ -14,7 +14,7 @@ const GroupStackedDendrogram = props => {
   const [tertiaryList, setTertiaryList] = useState([]);
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
   const svgRef = useRef();
   const svgBarRef = useRef();
@@ -29,7 +29,7 @@ const GroupStackedDendrogram = props => {
       for (let i = 0; i < graphData.length; i++) {
         tempArray.push({
           child: graphData[i][secondary],
-          parent: graphData[i][primary]
+          parent: graphData[i][primary],
         });
         setSecondaryList(tempArray);
       }
@@ -52,16 +52,16 @@ const GroupStackedDendrogram = props => {
 
   useEffect(() => {
     // Listen for any resize event update
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       setDimensions({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
       console.log(dimensions.width, dimensions.height);
 
       // If resize, remove the previous chart
       if (update.current) {
-        d3.selectAll('g').remove();
+        d3.selectAll("g").remove();
       } else {
         update.current = true;
       }
@@ -71,7 +71,7 @@ const GroupStackedDendrogram = props => {
     // DrawGraph(sample, dimensions);
   }, [dimensions]);
 
-  d3.selectAll('.container').style('grid-template-columns', '30% 70%');
+  d3.selectAll(".container").style("grid-template-columns", "30% 70%");
 
   const margin = { top: 1, right: 50, bottom: 30, left: 50 };
   let barWidth = (dimensions.width - margin.left - margin.right) * 0.85;
@@ -79,17 +79,17 @@ const GroupStackedDendrogram = props => {
 
   const svg = d3
     .select(svgRef.current)
-    .attr('width', (dimensions.width - margin.left - margin.right) / 3)
-    .attr('height', 320 - margin.top - margin.bottom)
-    .style('fill', 'none')
-    .attr('transform', 'translate(0,0)');
+    .attr("width", (dimensions.width - margin.left - margin.right) / 3)
+    .attr("height", 320 - margin.top - margin.bottom)
+    .style("fill", "none")
+    .attr("transform", "translate(0,0)");
 
   const dataStructure = d3
     .stratify()
-    .id(function(d) {
+    .id(function (d) {
       return d.child;
     })
-    .parentId(function(d) {
+    .parentId(function (d) {
       return d.parent;
     })(data);
   //define tree structure layout
@@ -100,81 +100,81 @@ const GroupStackedDendrogram = props => {
   const information = treeStructure(dataStructure);
 
   const connections = svg
-    .append('g')
-    .selectAll('path')
+    .append("g")
+    .selectAll("path")
     .data(information.links());
 
   connections
     .enter()
-    .append('path')
-    .attr('d', function(d) {
+    .append("path")
+    .attr("d", function (d) {
       return (
-        'M' +
+        "M" +
         d.source.y +
-        ',' +
+        "," +
         d.source.x +
-        'h 40 V' +
+        "h 40 V" +
         d.target.x +
-        ' H' +
+        " H" +
         d.target.y
       );
     })
-    .style('fill', 'none')
-    .attr('stroke', 'gray')
-    .attr('stroke-width', '1px');
+    .style("fill", "none")
+    .attr("stroke", "gray")
+    .attr("stroke-width", "1px");
 
   const rectangles = svg
-    .append('g')
-    .selectAll('rect')
+    .append("g")
+    .selectAll("rect")
     .data(information.descendants());
   rectangles
     .enter()
-    .append('rect')
-    .attr('x', function(d) {
+    .append("rect")
+    .attr("x", function (d) {
       return d.y;
     })
-    .attr('y', function(d) {
+    .attr("y", function (d) {
       return d.x - 15;
     })
-    .style('fill', 'white')
-    .attr('stroke', 'white')
-    .attr('width', 120)
-    .attr('height', 20);
+    .style("fill", "white")
+    .attr("stroke", "white")
+    .attr("width", 120)
+    .attr("height", 20);
 
   const names = svg
-    .append('g')
-    .selectAll('text')
+    .append("g")
+    .selectAll("text")
     .data(information.descendants());
   names
     .enter()
-    .append('text')
-    .text(function(d) {
+    .append("text")
+    .text(function (d) {
       return d.data.child;
     })
-    .attr('x', function(d) {
+    .attr("x", function (d) {
       return d.y + 8;
     })
-    .attr('y', function(d) {
+    .attr("y", function (d) {
       return d.x;
     })
-    .style('fill', 'black')
-    .style('font-size', 12)
-    .style('text-anchor', 'left')
-    .style('dominant-baseline', 'middle');
+    .style("fill", "black")
+    .style("font-size", 12)
+    .style("text-anchor", "left")
+    .style("dominant-baseline", "middle");
 
   //Stacked Bar
 
   const svgBar = d3
     .select(svgBarRef.current)
-    .attr('width', barWidth + margin.left + margin.right)
-    .attr('height', barHeight + margin.top + margin.bottom);
+    .attr("width", barWidth + margin.left + margin.right)
+    .attr("height", barHeight + margin.top + margin.bottom);
 
   // stacks/layers
   const stackGenerator = d3.stack().keys(allKeys);
   const layers = stackGenerator(graphData);
   const extent = [
     0,
-    d3.max(layers, layer => d3.max(layer, sequence => sequence[1]))
+    d3.max(layers, (layer) => d3.max(layer, (sequence) => sequence[1])),
   ];
 
   //scales
@@ -185,55 +185,53 @@ const GroupStackedDendrogram = props => {
 
   const yScale = d3
     .scaleBand()
-    .domain(graphData.map(d => d.total_sends))
+    .domain(graphData.map((d) => d.total_sends))
     .range([0, barHeight])
     .padding(0.1);
 
   //axes
   const xAxis = d3.axisBottom(xScale);
   svgBar
-    .select('.x-axis')
-    .attr('transform', `translate(0, ${barHeight})`)
+    .select(".x-axis")
+    .attr("transform", `translate(0, ${barHeight})`)
     .call(xAxis)
-    .attr('fill', 'none')
-    .style('color', 'black')
-    .selectAll('text')
-    .attr('transform', 'translate(-10,0)rotate(0)')
-    .style('text-anchor', 'end')
-    .style('font-size', 12);
+    .attr("fill", "none")
+    .style("color", "black")
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(0)")
+    .style("text-anchor", "end")
+    .style("font-size", 12);
 
   const yAxis = d3.axisLeft(yScale);
   svgBar
-    .select('.y-axis')
-    .attr('transform', `translate(0, 0 )`)
+    .select(".y-axis")
+    .attr("transform", `translate(0, 0 )`)
     .call(yAxis)
-    .attr('fill', 'none')
-    .style('color', 'black')
-    .attr('id', 'yAxisTick')
-    .selectAll('text')
+    .attr("fill", "none")
+    .style("color", "black")
+    .attr("id", "yAxisTick")
+    .selectAll("text")
     .remove();
 
-  d3.select('#yAxisTick')
-    .select('line')
-    .remove();
+  d3.select("#yAxisTick").select("line").remove();
 
   //rendering
   svgBar
-    .selectAll('.layer')
+    .selectAll(".layer")
     .data(layers)
-    .join('g')
-    .attr('class', 'layer')
-    .attr('fill', layer => colors[layer.key])
-    .selectAll('rect')
-    .data(layer => layer)
-    .join('rect')
-    .attr('x', sequence => xScale(sequence[0]))
-    .attr('height', yScale.bandwidth())
-    .attr('y', sequence => yScale(sequence.data.total_sends))
-    .attr('width', sequence => xScale(sequence[1]) - xScale(sequence[0]));
+    .join("g")
+    .attr("class", "layer")
+    .attr("fill", (layer) => colors[layer.key])
+    .selectAll("rect")
+    .data((layer) => layer)
+    .join("rect")
+    .attr("x", (sequence) => xScale(sequence[0]))
+    .attr("height", yScale.bandwidth())
+    .attr("y", (sequence) => yScale(sequence.data.total_sends))
+    .attr("width", (sequence) => xScale(sequence[1]) - xScale(sequence[0]));
 
   return (
-    <div ref={wrapperRef} style={{ display: 'grid' }} className="container">
+    <div ref={wrapperRef} style={{ display: "grid" }} className="container">
       <svg ref={svgRef}></svg>
       <svg ref={svgBarRef}>
         <g className="x-axis" />
@@ -246,15 +244,15 @@ const GroupStackedDendrogram = props => {
 export default GroupStackedDendrogram;
 
 const data = [
-  { child: 'Apple TV App', parent: '' },
-  { child: 'ATV WTWP BRA 1', parent: 'Apple TV App' },
-  { child: 'ATV WTWP BRA 2', parent: 'Apple TV App' },
-  { child: 'ATV WTWP BRA 3', parent: 'Apple TV App' },
-  { child: 'ATV WTWP BRA 4', parent: 'Apple TV App' },
-  { child: 'Frio_ET_BRA 1', parent: 'ATV WTWP BRA 1' },
-  { child: 'Harmony_ET_BRA 2', parent: 'ATV WTWP BRA 2' },
-  { child: 'Harmony_PT_BRA 3', parent: 'ATV WTWP BRA 3' },
-  { child: 'Video_Transactors_PT_BRA 4', parent: 'ATV WTWP BRA 4' }
+  { child: "Apple TV App", parent: "" },
+  { child: "ATV WTWP BRA 1", parent: "Apple TV App" },
+  { child: "ATV WTWP BRA 2", parent: "Apple TV App" },
+  { child: "ATV WTWP BRA 3", parent: "Apple TV App" },
+  { child: "ATV WTWP BRA 4", parent: "Apple TV App" },
+  { child: "Frio_ET_BRA 1", parent: "ATV WTWP BRA 1" },
+  { child: "Harmony_ET_BRA 2", parent: "ATV WTWP BRA 2" },
+  { child: "Harmony_PT_BRA 3", parent: "ATV WTWP BRA 3" },
+  { child: "Video_Transactors_PT_BRA 4", parent: "ATV WTWP BRA 4" },
 ];
 // const statistics = [
 //   {
